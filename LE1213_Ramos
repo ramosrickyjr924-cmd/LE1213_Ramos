@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_NAME 100
+#define MAX_AGE 10
+#define MAX_COURSE 50
+#define FILENAME "student_records.txt"
+
+void write_student_database() {
+    FILE *file_ptr;
+    int num_students;
+    char name[MAX_NAME];
+    char age[MAX_AGE];
+    char course[MAX_COURSE];
+
+    printf("Writing Student Database:\n");
+    printf("How many students do you want to record? ");
+    if (scanf("%d", &num_students) != 1 || num_students <= 0) {
+        printf("Invalid number of students. Aborting write operation.\n");
+        return;
+    }
+    
+    while (getchar() != '\n');
+
+    file_ptr = fopen(FILENAME, "w");
+    if (file_ptr == NULL) {
+        perror("Error opening file for writing");
+        return;
+    }
+
+    for (int i = 1; i <= num_students; i++) {
+        printf("\nStudent %d\n", i);
+        printf("Enter Name: ");
+        if (fgets(name, MAX_NAME, stdin) == NULL) break; 
+        name[strcspn(name, "\n")] = 0;
+
+        printf("Enter Age: ");
+        if (fgets(age, MAX_AGE, stdin) == NULL) break;
+        age[strcspn(age, "\n")] = 0;
+
+        printf("Enter Course: ");
+        if (fgets(course, MAX_COURSE, stdin) == NULL) break;
+        course[strcspn(course, "\n")] = 0;
+
+        fprintf(file_ptr, "Student %d\n", i);
+        fprintf(file_ptr, "Name: %s\n", name);
+        fprintf(file_ptr, "Age: %s\n", age);
+        fprintf(file_ptr, "Course: %s\n", course);
+        fprintf(file_ptr, "--------------------------------\n\n");
+    }
+
+    fclose(file_ptr);
+    printf("\nStudent database successfully saved to file: %s\n", FILENAME);
+}
+
+void read_student_database() {
+    FILE *file_ptr;
+    char buffer[256];
+
+    printf("\nReading Student Database:\n");
+
+    file_ptr = fopen(FILENAME, "r");
+    if (file_ptr == NULL) {
+        perror("Error opening file for reading. File may not exist or an error occurred.");
+        return;
+    }
+
+    while (fgets(buffer, sizeof(buffer), file_ptr) != NULL) {
+        printf("%s", buffer);
+    }
+    
+    fclose(file_ptr);
+}
+
+
+int main() {
+    write_student_database();
+
+    read_student_database();
+
+    return 0;
+}
